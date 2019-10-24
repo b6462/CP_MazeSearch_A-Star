@@ -1,19 +1,13 @@
-this is a class project
+这是一个课程项目
 
--a maze search program based on A* algorithm
+基于A* 算法的迷宫探索程序
 
--#Features:
+功能：
 
-1)maze creation(customizable maze scale\dig regularity\entrance position)
+1）自定义生成迷宫（可自定义迷宫规模、挖掘最大深度、入口位置）
 
-2)A* search algorithm-1
+2）A* 算法1号
 
-3)A* search algorithm-2(spcificly designed for MicroMouse maze-search\practical use)
+3）A* 算法2号（专门为在电脑鼠上实例化设计 可用于实际用途）
 
-4)debug mode(display every step)
-
--NOTE: 
-
-1)This program is jancky, and lacks refinement-which may improve in the future.
-
-2)Most of it's debugging features and annotations are in Chinese.
+4）debug模式 显示每一步所涉及计算、节点内容、判断
