@@ -1,0 +1,168 @@
+#include "pch.h"
+#include "stdio.h"
+#include "malloc.h"
+#include "string.h"
+#include "conio.h"
+#include "stdlib.h"
+
+int endNodeNum = 0; //用于储存探索为空的节点数
+int leafNum = 0; //叶节点数量
+int depth = 0; //深度
+int depthTemp = 0;//深度临时值
+
+typedef struct TreeNode
+{
+	TreeNode* Lchild;
+	char value;
+	TreeNode* Rchild;
+}Node, *PNode;
+
+void solveMem() //清空输入缓存
+{
+	char c_tmp;
+	while ((c_tmp = getchar() != '\n') && c_tmp != EOF);//循环getchar清洗回车缓存
+}
+
+PNode createTree(PNode tempNode)
+{
+	char import;
+	scanf_s("%c", &import);
+	if (import != '#')
+	{
+		tempNode = (PNode)malloc(sizeof(Node));
+		tempNode->value = import;
+		tempNode->Lchild = NULL;
+		tempNode->Rchild = NULL;
+		tempNode->Lchild = createTree(tempNode->Lchild);
+		tempNode->Rchild = createTree(tempNode->Rchild);
+	}
+	return tempNode;
+}
+
+void calInit() //初始化计数相关的全部数值
+{
+	endNodeNum = 0;
+	leafNum = 0;
+	depth = 0;
+	depthTemp = 0;
+}
+
+void DLRshow(PNode tree)
+{
+	if (tree)
+	{
+		printf("%c", tree->value);
+		DLRshow(tree->Lchild);
+		DLRshow(tree->Rchild);
+	}
+}
+
+void LDRshow(PNode tree)
+{
+	if (tree)
+	{
+		LDRshow(tree->Lchild);
+		printf("%c", tree->value);
+		LDRshow(tree->Rchild);
+	}
+}
+
+void LRDshow(PNode tree)
+{
+	if (tree)
+	{
+		LRDshow(tree->Lchild);
+		LRDshow(tree->Rchild);
+		printf("%c", tree->value);
+	}
+}
+
+void LDRleafCheck(PNode tree)
+{
+	if (tree)
+	{
+		endNodeNum = 0;
+		LDRleafCheck(tree->Lchild);
+		LDRleafCheck(tree->Rchild);
+		if (endNodeNum == 2) //则说明之下无子 此节点为叶节点
+		{
+			leafNum++;
+			printf("Leaf %d is %c\n",leafNum, tree->value);
+		}
+		endNodeNum = 0; //避免左方收回时保留endNodeNum==1并右侧无节点时误认叶节点
+	}
+	else
+	{
+		endNodeNum++;
+	}
+}
+
+void LDRdepthCheck(PNode tree)
+{
+	if (tree)
+	{
+		endNodeNum = 0;
+		depthTemp++;
+		printf("current depthTemp on %c is %d \n",tree->value, depthTemp);
+		LDRdepthCheck(tree->Lchild);
+		LDRdepthCheck(tree->Rchild);
+		if (endNodeNum == 2) //说明此列深度探索终止
+		{
+			if (depthTemp > depth)
+			{
+				depth = depthTemp;
+			}
+		}
+		endNodeNum = 0;
+		depthTemp--;
+	}
+	else
+	{
+		endNodeNum++;
+	}
+}
+
+int main()
+{
+	int checker;
+	PNode tree = (PNode)malloc(sizeof(Node));
+	printf("Create your tree:\n");
+	tree = createTree(tree);
+	while (1)
+	{
+		printf("\nChoose command:(1/2/3/4/5/6)->(DLR/LDR/LRD/leaf/depth/quit):\n");
+		//fflush(stdin);//循环清洗回车缓存 但是不通用 在不同电脑间出现了兼容性问题
+		solveMem();
+		scanf_s("%d", &checker);
+		switch (checker)
+		{
+		case 1:
+			printf("Traversion result through DLR is:");
+			DLRshow(tree);
+			break;
+		case 2:
+			printf("Traversion result through LDR is:");
+			LDRshow(tree);
+			break;
+		case 3:
+			printf("Traversion result through LRD is:");
+			LRDshow(tree);
+			break;
+		case 4:
+			calInit();
+			LDRleafCheck(tree);
+			printf("The leaf of the tree in question is:%d\n", leafNum);
+			break;
+		case 5:
+			calInit();
+			LDRdepthCheck(tree);
+			printf("The depth of the tree in question is:%d\n", depth);
+			break;
+		case 6:
+			exit(0);
+		default:
+			printf("illegal command, please enter again.\n");
+			break;
+		}
+	}
+}
