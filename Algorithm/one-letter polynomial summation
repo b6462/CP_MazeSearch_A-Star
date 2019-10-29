@@ -1,0 +1,160 @@
+#include "pch.h"
+#include "stdio.h"
+#include "malloc.h"
+#include "string.h"
+#include "conio.h"
+#include "stdlib.h"
+
+typedef struct ListNode
+{
+	int ratio;
+	int power;
+	ListNode* next;
+}Node, *PNode;
+
+void solveMem() //清空输入缓存
+{
+	char c_tmp;
+	while ((c_tmp = getchar() != '\n') && c_tmp != EOF);//循环getchar清洗回车缓存
+}
+
+PNode CreateList()
+{
+	int rat;
+	int pow;
+	PNode PHead = (PNode)malloc(sizeof(Node));
+	PNode PTail = PHead;
+	PTail->next = NULL;
+	int count = 1;
+	printf("enter the %d pair:(sample: 2,3)\n", count);
+	scanf_s("%d,%d", &rat, &pow);
+	solveMem();
+	while (rat || pow)
+	{
+		count++;
+		PNode PNew = (PNode)malloc(sizeof(Node));
+		PNew->ratio = rat;
+		PNew->power = pow;
+		PTail->next = PNew;
+		PNew->next = NULL;
+		PTail = PNew;
+		printf("enter the %d pair:(end with: 0,0)\n", count);
+		scanf_s("%d,%d", &rat, &pow);
+		solveMem();
+
+	}
+	return PHead;
+}
+
+
+void Traverse(PNode SolveList)
+{
+	PNode tempNode;
+	tempNode = SolveList;
+	while (tempNode)
+	{
+		printf("%d,%d ", tempNode->ratio, tempNode->power);
+		tempNode = tempNode->next;
+	}
+	printf("\n");
+}
+
+PNode SolveList(PNode List_1, PNode List_2)
+{
+	int rat_1;
+	int rat_2;
+	int pow_1;
+	int pow_2;
+	PNode PHead = (PNode)malloc(sizeof(Node));
+	PNode PTail = PHead;
+	PTail->next = NULL;
+	PNode tmp_1;
+	PNode tmp_2;
+	tmp_1 = List_1;
+	tmp_2 = List_2;
+	tmp_1 = tmp_1->next;
+	tmp_2 = tmp_2->next;
+
+
+
+	while (tmp_1 || tmp_2)//判断遍历是否完成
+	{
+		PNode PNew = (PNode)malloc(sizeof(Node));
+		if (tmp_1) //避免节点为空时指向空指针赋值错误
+		{
+			rat_1 = tmp_1->ratio;
+			pow_1 = tmp_1->power;
+		}
+		if (tmp_2)
+		{
+			rat_2 = tmp_2->ratio;
+			pow_2 = tmp_2->power;
+		}
+
+
+
+		if (tmp_1 && tmp_2) //两节点指针都存在
+		{
+			printf("current compare:(%d,%d)&(%d,%d)\n", rat_1, pow_1, rat_2, pow_2);
+			if (pow_1 == pow_2)//同幂 相加 重赋值为0,0避免重复计算
+			{
+				PNew->ratio = rat_1 + rat_2;
+				PNew->power = pow_1;
+				PTail->next = PNew;
+				PNew->next = NULL;
+				PTail = PNew;
+				tmp_1->ratio = 0;
+				tmp_1->power = 0;
+				tmp_2->ratio = 0;
+				tmp_2->power = 0;
+				tmp_1 = tmp_1->next;
+				tmp_2 = List_2->next;
+			}
+			else //只移动tmp_2 遍历求是否有与tmp_1相同的幂
+			{
+				tmp_2 = tmp_2->next;
+			}
+		}
+		else if (tmp_1) //遍历完tmp_2 未寻得同幂 则说明该tmp_1节点孤独 输出 置零 tmp_2归位 重新开始与下一个tmp_1节点遍历对比
+		{
+			printf("tmp_1 current to:(%d,%d)\n", rat_1, pow_1);
+			PNew->ratio = rat_1;
+			PNew->power = pow_1;
+			PTail->next = PNew;
+			PNew->next = NULL;
+			PTail = PNew;
+			tmp_1 = tmp_1->next;
+			tmp_2 = List_2->next;
+		}
+		else if (tmp_2) //只剩下tmp_2 说明tmp_1遍历完毕 其余tmp_2节点全部孤独 只要未置零就全部输出
+		{
+			printf("tmp_2 current to:(%d,%d)\n", rat_2, pow_2);
+			if (rat_2 != 0)
+			{
+				PNew->ratio = rat_2;
+				PNew->power = pow_2;
+				PTail->next = PNew;
+				PNew->next = NULL;
+				PTail = PNew;
+			}
+			tmp_2 = tmp_2->next;
+		}
+	}
+	return PHead;
+}
+
+void main()
+{
+	PNode List_1;
+	printf("Create List 1:\n");
+	List_1 = CreateList();
+	PNode List_2;
+	printf("Create List 2:\n");
+	List_2 = CreateList();
+	printf("Summation of the polynomes above is:\n");
+	PNode Solve;
+	Solve = SolveList(List_1, List_2);
+	Solve = Solve->next;
+	Traverse(Solve);
+
+}
