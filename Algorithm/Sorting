@@ -1,0 +1,216 @@
+#include "pch.h"
+#include "windows.h"
+#include "stdio.h"
+#include "malloc.h"
+#include "time.h"
+
+int exc_all = 0; //交换次数
+int com_all = 0; //比较次数
+
+void show_graph(int *main_num, int sort_num)
+{
+	system("cls");
+	for (int i = sort_num; i > 0; i--)
+	{
+		for (int j = main_num[i - 1]; j > 0; j--)
+		{
+			printf("*");
+		}
+		printf("\n");
+	}
+}
+
+void BubbleSort(int *main_num, int sort_num)
+{
+	int temp;
+	for (int i = 0; i < sort_num - 1; i++)
+		for (int j = 0; j < sort_num - 1 - i; j++)
+		{
+			com_all++;
+			if (main_num[j] > main_num[j + 1])
+			{
+				system("cls");
+				exc_all++;
+				temp = main_num[j];
+				main_num[j] = main_num[j + 1];
+				main_num[j + 1] = temp;
+				show_graph(main_num, sort_num);
+			}
+		}
+}
+
+void DirectSort(int *main_num, int sort_num)
+{
+	int temp;
+	int j;
+	for (int i = 1; i < sort_num; i++)
+	{
+		com_all++;
+		if (main_num[i] < main_num[i - 1])
+		{
+
+			temp = main_num[i];
+			for (j = i - 1; temp < main_num[j] && j >= 0; j--)
+			{
+				com_all++;
+				exc_all++;
+				system("cls");
+				main_num[j + 1] = main_num[j];
+				show_graph(main_num, sort_num);
+			}
+			main_num[j + 1] = temp;
+		}
+	}
+}
+
+void SimpleSelSort(int *main_num, int sort_num)
+{
+	int i, j, temp;
+	for (i = 0; i < sort_num - 1; i++)
+	{
+		for (j = i; j < sort_num; j++)
+		{
+			com_all++;
+			if (main_num[j] < main_num[i])
+			{
+				exc_all++;
+				system("cls");
+				temp = main_num[j];
+				main_num[j] = main_num[i];
+				main_num[i] = temp;
+				show_graph(main_num, sort_num);
+			}
+		}
+	}
+}
+
+int Partition_1(int a[], int low, int high)
+{
+	int pivLoc = a[low], temp;
+	while (low < high)
+	{
+		com_all++;
+		while (low < high && a[high] >= pivLoc)
+		{
+			com_all++;
+			--high;
+		}
+		exc_all++;
+		temp = a[low];
+		a[low] = a[high];
+		a[high] = temp;
+		while (low < high && a[low] <= pivLoc)
+		{
+			com_all++;
+			++low;
+		}
+		exc_all++;
+		temp = a[low];
+		a[low] = a[high];
+		a[high] = temp;
+		system("cls");
+	}
+	return low;
+}
+
+void QSort(int *a, int n, int low, int high)
+{
+	int pivLoc = 0;
+	com_all++;
+	if (low < high)
+	{
+		pivLoc = Partition_1(a, low, high);
+		system("cls");
+		show_graph(a, n);
+		QSort(a, n, low, pivLoc - 1);
+		QSort(a, n, pivLoc + 1, high);
+	}
+}
+
+void QuickSort(int *main_num, int sort_num)
+{
+	QSort(main_num, sort_num, 0, sort_num - 1);
+}
+
+void ShellInsert(int *a, int n, int dk)
+{
+	int i, j, k, temp;
+	for (k = 0; k < dk; k++)
+	{
+		for (i = k + dk; i < n; i = i + dk)
+		{
+			com_all++;
+			if (a[i] < a[i - dk])
+			{
+				exc_all++;
+				temp = a[i];
+				for (j = i - dk; j >= 0 && temp < a[j]; j = j - dk)
+				{
+					com_all++;
+					show_graph(a, n);
+					exc_all++;
+					a[j + dk] = a[j];
+				}
+				a[j + dk] = temp;
+			}
+		}
+	}
+}
+
+void ShellSort(int *a, int n)
+{
+	int dlta[3] = { 5,3,1 };
+	for (int k = 0; k < 3; ++k)
+	{
+		ShellInsert(a, n, dlta[k]);
+	}
+}
+
+int main()
+{
+	while (1)
+	{
+		system("cls");
+		printf("Enter the amount of numbers for sorting:\n");
+		int sort_num;
+		scanf_s("%d", &sort_num);
+		srand((unsigned)time(NULL));
+		int main_num[200];
+		for (int i = sort_num; i > 0; i--)
+		{
+			main_num[i - 1] = rand() % 50;
+		}
+		show_graph(main_num, sort_num);
+		printf("Choose your sort:\nbubble(1)\ndirect(2)\nsimple_sel(3)\nfast(4)\nshell(5)\n");
+		int choice = 0;
+		int result;
+		scanf_s("%d", &choice);
+		switch (choice)
+		{
+		case 1:
+			BubbleSort(main_num, sort_num);
+			show_graph(main_num, sort_num);
+			break;
+		case 2:
+			DirectSort(main_num, sort_num);
+			show_graph(main_num, sort_num);
+			break;
+		case 3:
+			SimpleSelSort(main_num, sort_num);
+			show_graph(main_num, sort_num);
+			break;
+		case 4:
+			QuickSort(main_num, sort_num);
+			show_graph(main_num, sort_num);
+			break;
+		case 5:
+			ShellSort(main_num, sort_num);
+			show_graph(main_num, sort_num);
+			break;
+		}
+		printf("Num of comparisons:%d\nNum of exchanges:%d\n", com_all, exc_all * 3);
+		com_all = 0;
+		exc_all = 0;
+		system("pause");
+	}
+}
