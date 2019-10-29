@@ -1,0 +1,35 @@
+#include "pch.h"
+#include <stdio.h>
+#include <string.h>
+
+int count = 0; //全局变量用于计数
+
+void moveHN(char base, char target)
+{
+	printf("%c->%c\n", base, target);
+	count++;
+}
+
+void mainHN(int n, char base, char support, char target)
+{
+	if (n == 1)
+	{
+		moveHN(base, target);//到达最后一层则直接向目标移动
+	}
+	else
+	{
+		mainHN(n - 1, base, target, support);//未到达则规划移动其上所有到相对support位
+		moveHN(base, target);
+		mainHN(n - 1, support, base, target);//之后将相对support上的全都以相对target为目标移动
+	}
+}
+
+int main()
+{
+	int stack;
+	printf("Input number of plates:\n");
+	scanf_s("%d", &stack);
+	mainHN(stack, 'A', 'B', 'C');
+	printf("The algorithm moved %d times\n", count);
+	return 0;
+}
